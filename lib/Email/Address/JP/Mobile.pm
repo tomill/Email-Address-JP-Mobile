@@ -7,61 +7,40 @@ use Mail::Address::MobileJp;
 
 our $carrier_list = [
     {
-        newname  => 'NonMobile',
-        oldname  => 'NonMobile',
-        letter   => 'N',
-        methods  => [qw( is_non_mobile )],
-        detector => sub { not is_mobile_jp(shift) },
-        encoding => 'iso-2022-jp',
-    },
-    {
-        newname  => 'DoCoMo',
-        oldname  => 'DoCoMo',
+        name     => 'DoCoMo',
         letter   => 'D',
-        methods  => [qw( is_docomo is_imode )],
         detector => \&is_imode,
         encoding => 'x-sjis-docomo',
     },
     {
-        newname  => 'EZweb',
-        oldname  => 'EZweb',
+        name     => 'EZweb',
         letter   => 'E',
-        methods  => [qw( is_kddi is_ezweb )],
         detector => \&is_ezweb,
         encoding => 'x-sjis-kddi-auto',
     },
     {
-        newname  => 'ThirdForce',
-        oldname  => 'Vodafone',
+        name     => 'ThirdForce',
         letter   => 'V',
-        methods  => [qw( is_softbank is_thirdforce is_vodafone is_j_phone )],
         detector => \&is_vodafone,
         encoding => 'x-utf8-softbank',
     },
     {
-        newname  => 'AirHPhone',
-        oldname  => 'AirH',
+        name     => 'AirHPhone',
         letter   => 'H',
-        methods  => [qw( is_willcom is_airhphone is_airh )],
         detector => sub {
             my $email = shift;
             is_mobile_jp($email) && $email =~ /pdx\.ne\.jp$/ ? 1 : 0; # need Mail::Address::MobileJp::is_willcom?
         },
         encoding => 'x-sjis-docomo', # XXX x-sjis-airh ??
     },
+    {
+        name     => 'NonMobile',
+        letter   => 'N',
+        detector => sub { not is_mobile_jp(shift) },
+        encoding => 'iso-2022-jp',
+    },
 ];
     
-# make is_* method
-for my $carrier (@$carrier_list) {
-    no strict 'refs'; ## no critic
-    for my $method (@{ $carrier->{methods} }) {
-        *{'Email::Address::'.$method} = sub {
-            my $self = shift;
-            $carrier->{detector}->($self->address) ? 1 : 0;
-        };
-    }
-}
-
 sub Email::Address::is_mobile {
     my $self = shift;
     is_mobile_jp($self->address) ? 1 : 0;
@@ -70,16 +49,8 @@ sub Email::Address::is_mobile {
 sub Email::Address::carrier_name {
     my $self = shift;
     my $carrier = __carrier($self->address);
-    $carrier->{newname};
+    $carrier->{name};
 }
-
-sub Email::Address::carrier_name_aka {
-    my $self = shift;
-    my $carrier = __carrier($self->address);
-    $carrier->{oldname};
-}
-
-*Email::Address::carrier = \&Email::Address::carrier_letter;
 
 sub Email::Address::carrier_letter {
     my $self = shift;
@@ -101,7 +72,7 @@ sub __carrier {
     }
     
     return { # dummy
-        newname  => '',
+        name     => '',
         oldname  => '',
         letter   => '',
     }
@@ -123,13 +94,9 @@ Email::Address::JP::Mobile - Extends Email::Address for Japanese cellphone
   my ($email) = Email::Address->parse('docomo.taro@docomo.ne.jp');
   
   $email->is_mobile;      # 1
-  $email->is_non_mobile;  # 0
-  $email->is_docomo;      # 1
-  $email->is_ezweb;       # 0
-  $email->is_softbank;    # 0
   $email->carrier_name;   # DoCoMo
   $email->carrier_letter; # D
-  ...
+  $email->encoding_name;  # x-sjis-docomo
 
 =head1 DESCRIPTION
 
@@ -144,19 +111,9 @@ B<CAUTION:> This module is still alpha, its possible the API will change.
 
 =item is_mobile
 
-=item is_non_mobile
-
-=item is_docomo, is_imode
-
-=item is_kddi, is_ezweb
-
-=item is_softbank, is_thirdforce, is_j_phone, is_vodafone
-
-=item is_willcom, is_airhphone, is_airh
-
 These return 1 or 0.
 
-=item carrier, carrier_letter
+=item carrier_letter
 
 Returns L<HTTP::MobileAgent> (and L<HTTP::MobileAttribute>) 's carrier() value
 like "V".
@@ -164,10 +121,6 @@ like "V".
 =item carrier_name
 
 Returns L<HTTP::MobileAttribute>'s carrier_longname() value like "ThirdForce".
-
-=item carrier_name_aka
-
-Returns L<HTTP::MobileAgent>'s carrier_longname() value like "Vodafone".
 
 =item encoding_name
 

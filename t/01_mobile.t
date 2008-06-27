@@ -59,15 +59,8 @@ my @is_mobile = (
 
 for my $address (@non_mobile) {
     my ($email) = Email::Address::Loose->parse($address);
-    ok $email->is_non_mobile($address), $address;
     ok ! $email->is_mobile($address), $address;
-    ok ! $email->is_docomo($address), $address;
-    ok ! $email->is_kddi($address), $address;
-    ok ! $email->is_softbank($address), $address;
-    ok ! $email->is_willcom($address), $address;
     is $email->carrier_name, 'NonMobile', $address;
-    is $email->carrier_name_aka, 'NonMobile', $address;
-    is $email->carrier, 'N', $address;
     is $email->carrier_letter, 'N', $address;
     is $email->encoding_name, 'iso-2022-jp';
 }
@@ -75,72 +68,36 @@ for my $address (@non_mobile) {
 for my $address (@is_mobile) {
     my ($email) = Email::Address::Loose->parse($address);
     ok $email->is_mobile($address), $address;
-    ok ! $email->is_non_mobile($address), $address;
 }
 
 for my $address (@docomo) {
     my ($email) = Email::Address::Loose->parse($address);
-    ok $email->is_docomo($address), $address;
-    ok $email->is_imode($address), $address;
     ok $email->is_mobile($address), $address;
-    ok ! $email->is_non_mobile($address), $address;
-    ok ! $email->is_kddi($address), $address;
-    ok ! $email->is_softbank($address), $address;
-    ok ! $email->is_willcom($address), $address;
     is $email->carrier_name, 'DoCoMo', $address;
-    is $email->carrier_name_aka, 'DoCoMo', $address;
-    is $email->carrier, 'D', $address;
     is $email->carrier_letter, 'D', $address;
     is $email->encoding_name, 'x-sjis-docomo';
 }
 
 for my $address (@kddi) {
     my ($email) = Email::Address::Loose->parse($address);
-    ok $email->is_kddi($address), $address;
-    ok $email->is_ezweb($address), $address;
     ok $email->is_mobile($address), $address;
-    ok ! $email->is_non_mobile($address), $address;
-    ok ! $email->is_docomo($address), $address;
-    ok ! $email->is_softbank($address), $address;
-    ok ! $email->is_willcom($address), $address;
     is $email->carrier_name, 'EZweb', $address;
-    is $email->carrier_name_aka, 'EZweb', $address;
-    is $email->carrier, 'E', $address;
     is $email->carrier_letter, 'E', $address;
     is $email->encoding_name, 'x-sjis-kddi-auto';
 }
 
 for my $address (@softbank) {
     my ($email) = Email::Address::Loose->parse($address);
-    ok $email->is_softbank($address), $address;
-    ok $email->is_thirdforce($address), $address;
-    ok $email->is_vodafone($address), $address;
-    ok $email->is_j_phone($address), $address;
     ok $email->is_mobile($address), $address;
-    ok ! $email->is_non_mobile($address), $address;
-    ok ! $email->is_docomo($address), $address;
-    ok ! $email->is_kddi($address), $address;
-    ok ! $email->is_willcom($address), $address;
     is $email->carrier_name, 'ThirdForce', $address;
-    is $email->carrier_name_aka, 'Vodafone', $address;
-    is $email->carrier, 'V', $address;
     is $email->carrier_letter, 'V', $address;
     is $email->encoding_name, 'x-utf8-softbank';
 }
 
 for my $address (@willcom) {
     my ($email) = Email::Address::Loose->parse($address);
-    ok $email->is_willcom($address), $address;
-    ok $email->is_airh($address), $address;
-    ok $email->is_airhphone($address), $address;
     ok $email->is_mobile($address), $address;
-    ok ! $email->is_non_mobile($address), $address;
-    ok ! $email->is_docomo($address), $address;
-    ok ! $email->is_kddi($address), $address;
-    ok ! $email->is_softbank($address), $address;
     is $email->carrier_name, 'AirHPhone', $address;
-    is $email->carrier_name_aka, 'AirH', $address;
-    is $email->carrier, 'H', $address;
     is $email->carrier_letter, 'H', $address;
     is $email->encoding_name, 'x-sjis-docomo';
 }
