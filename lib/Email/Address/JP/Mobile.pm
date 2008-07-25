@@ -3,79 +3,27 @@ use strict;
 use warnings;
 our $VERSION = '0.01';
 
-use Mail::Address::MobileJp;
+use Module::Pluggable(
+    search_path => __PACKAGE__,
+    except      => __PACKAGE__.'::Base',
+    instantiate => 'new'
+);
 
-our $carrier_list = [
-    {
-        name     => 'DoCoMo',
-        letter   => 'D',
-        detector => \&is_imode,
-        encoding => 'x-sjis-docomo',
-    },
-    {
-        name     => 'EZweb',
-        letter   => 'E',
-        detector => \&is_ezweb,
-        encoding => 'x-sjis-kddi-auto',
-    },
-    {
-        name     => 'ThirdForce',
-        letter   => 'V',
-        detector => \&is_vodafone,
-        encoding => 'x-utf8-softbank',
-    },
-    {
-        name     => 'AirHPhone',
-        letter   => 'H',
-        detector => sub {
-            my $email = shift;
-            is_mobile_jp($email) && $email =~ /pdx\.ne\.jp$/ ? 1 : 0; # need Mail::Address::MobileJp::is_willcom?
-        },
-        encoding => 'x-sjis-docomo', # XXX x-sjis-airh ??
-    },
-    {
-        name     => 'NonMobile',
-        letter   => 'N',
-        detector => sub { not is_mobile_jp(shift) },
-        encoding => 'iso-2022-jp',
-    },
-];
+sub new {
+    my $self = bless {}, shift;
+    my $address = shift || "";
     
-sub Email::Address::is_mobile {
-    my $self = shift;
-    is_mobile_jp($self->address) ? 1 : 0;
+    my @module =
+        sort { $b->matches($address) <=> $a->matches($address) }
+        grep { $_->matches($address) > 0 }
+        grep { $_->isa('Email::Address::JP::Mobile::Base') }
+        $self->plugins;
+     
+    shift @module;
 }
 
-sub Email::Address::carrier_name {
-    my $self = shift;
-    my $carrier = __carrier($self->address);
-    $carrier->{name};
-}
-
-sub Email::Address::carrier_letter {
-    my $self = shift;
-    my $carrier = __carrier($self->address);
-    $carrier->{letter};
-}
-
-sub Email::Address::encoding_name {
-    my $self = shift;
-    my $carrier = __carrier($self->address);
-    $carrier->{encoding};
-}
-
-sub __carrier {
-    my $address = shift;
-    
-    for my $carrier (@$carrier_list) {
-        return $carrier if $carrier->{detector}->($address);
-    }
-    
-    return { # dummy
-        name     => '',
-        oldname  => '',
-        letter   => '',
-    }
+sub Email::Address::carrier {
+    __PACKAGE__->new(shift->address);
 }
 
 1;
@@ -85,67 +33,76 @@ __END__
 
 =head1 NAME
 
-Email::Address::JP::Mobile - Extends Email::Address for Japanese cellphone
+Email::Address::JP::Mobile - Email feature differences by the carrier
 
 =head1 SYNOPSIS
 
   use Email::Address::JP::Mobile;
 
-  my ($email) = Email::Address->parse('docomo.taro@docomo.ne.jp');
+  my $carrier = Email::Address::JP::Mobile->new('docomo.taro.@docomo.ne.jp');
+  $carrier->is_mobile; # 1
+  $carrier->name; # "DoCoMo"
+  $carrier->carrier_letter; # "I"
+  $carrier->mime_encoding->encode("\x{E63E}です"); # "=?SHIFT_JIS?B?+J+CxYK3?="
+  $carrier->mail_encoding->encode("\x{E63E}です"); # "\xF8\x9F\x82\xC5\x82\xB7"
   
-  $email->is_mobile;      # 1
-  $email->carrier_name;   # DoCoMo
-  $email->carrier_letter; # D
-  $email->encoding_name;  # x-sjis-docomo
+  # or,
+  
+  use Email::Address;
+  use Email::Address::Loose -override;
+  use Email::Address::JP::Mobile;
+
+  my ($email) = Email::Address->parse('docomo.taro.@docomo.ne.jp');
+  my $carrier = $email->carrier;
 
 =head1 DESCRIPTION
 
-Email::Address::JP::Mobile extends L<Email::Address> object for Japanese
-carrier information.
-
-B<CAUTION:> This module is still alpha, its possible the API will change.
+Email::Address::JP::Mobile is 日本の携帯電話のキャリアによる違いに
+対応するためのモジュールです。キャリアの判別やメール送信する際の適した
+エンコーディングを返します。
 
 =head1 METHODS
 
 =over 4
 
-=item is_mobile
+=item new( $email )
 
-These return 1 or 0.
+  my $carrier = Email::Address::JP::Mobile->new('docomo.taro.@docomo.ne.jp');
+  $carrier->carrier_letter; # "I"
+  $carrier->mime_encoding;  # 'MIME-Header-JP-Mobile-DoCoMo' Encode::Encoding object
+  $carrier->mail_encoding;  # 'x-sjis-docomo' Encode::Encoding object
 
-=item carrier_letter
+$carrier のメソッドについては各クラスの POD を参照してください。
+(L<http://search.cpan.org/dist/Email-Address-JP-Mobile>)
+ 
+=item Email::Address::carrier
 
-Returns L<HTTP::MobileAgent> (and L<HTTP::MobileAttribute>) 's carrier() value
-like "V".
+  my ($email) = Email::Address->parse('docomo.taro.@docomo.ne.jp');
+  $email->carrier->carrier_letter; # "I"
 
-=item carrier_name
+Email::Address::JP::Mobile は Email::Address オブジェクトに
+carrier というメソッドを拡張します。
 
-Returns L<HTTP::MobileAttribute>'s carrier_longname() value like "ThirdForce".
-
-=item encoding_name
-
-絵文字を残して送信できる L<Encode::JP::Mobile> のエンコーディング名を返します。
-例えば "x-sjis-docomo".
+ご存知のように日本の携帯は変なアドレスが許可されているので
+L<Email::Address::Loose> を併用した方がいいです。
 
 =back
+
+=head1 SEE ALSO
+
+L<Encode::JP::Moible>, L<Email::Address>, L<Email::Address::Loose>
+
+L<http://coderepos.org/share/browser/lang/perl/Email-Address-JP-Mobile> (repository)
+
+#mobilejp on irc.freenode.net (I've joined as "tomi-ru")
 
 =head1 AUTHOR
 
 Naoki Tomita E<lt>tomita@cpan.orgE<gt>
 
-=head1 DEVELOPMENT
-
-L<http://coderepos.org/share/browser/lang/perl/Email-Address-JP-Mobile>
-
-#mobilejp on irc.freenode.net (I've joined as "tomi-ru")
-
 =head1 LICENSE
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
-
-=head1 SEE ALSO
-
-L<Email::Address>, L<Email::Address::Loose>, L<Mail::Address::MobileJp>
 
 =cut

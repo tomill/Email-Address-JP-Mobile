@@ -1,13 +1,11 @@
 use strict;
 use Test::More 'no_plan';
 
-use Email::Address::Loose;
 use Email::Address::JP::Mobile;
 
 my @non_mobile = (
     'foo@example.com',
     'foo@dxx.pdx.ne.jp',
-    'foo <foo@doo.com>',
 );
 
 my @docomo = (
@@ -36,11 +34,7 @@ my @willcom = (
     'foo@dx.pdx.ne.jp',
 );
 
-my @is_mobile = (
-    @docomo,
-    @kddi,
-    @softbank,
-    @willcom,
+my @is_mobile_but_old = (
     'foo@mnx.ne.jp',
     'foo@bar.mnx.ne.jp',
     'foo@dct.dion.ne.jp',
@@ -54,50 +48,99 @@ my @is_mobile = (
     'foo@x.i-get.ne.jp',
     'foo@ez1.ido.ne.jp',
     'foo@cmail.ido.ne.jp',
-    'foo <foo@p1.foomoon.com>',
+);
+
+my @is_mobile = (
+    @docomo,
+    @kddi,
+    @softbank,
+    @willcom,
+    @is_mobile_but_old,
 );
 
 for my $address (@non_mobile) {
-    my ($email) = Email::Address::Loose->parse($address);
-    ok ! $email->is_mobile($address), $address;
-    is $email->carrier_name, 'NonMobile', $address;
-    is $email->carrier_letter, 'N', $address;
-    is $email->encoding_name, 'iso-2022-jp';
+    my $carrier = Email::Address::JP::Mobile->new($address);
+    ok ! $carrier->is_mobile, $address;
+    is $carrier->name, 'NonMobile', $address;
+    is $carrier->carrier_letter, 'N', $address;
+    
+    ok $carrier->mime_encoding->can('encode');
+    ok $carrier->mail_encoding->can('encode');
+
+    is $carrier->mime_encoding->name, 'MIME-Header';
+    is $carrier->mail_encoding->name, 'utf-8-strict';
+    
+    local $Email::Address::JP::Mobile::NonMobile::Encoding = 'iso-2022-jp';
+    is $carrier->mime_encoding->name, 'MIME-Header-ISO_2022_JP';
+    is $carrier->mail_encoding->name, 'iso-2022-jp';
 }
 
 for my $address (@is_mobile) {
-    my ($email) = Email::Address::Loose->parse($address);
-    ok $email->is_mobile($address), $address;
+    my $carrier = Email::Address::JP::Mobile->new($address);
+    ok $carrier->is_mobile, $address;
+}
+
+for my $address (@is_mobile_but_old) {
+    my $carrier = Email::Address::JP::Mobile->new($address);
+    ok $carrier->is_mobile, $address;
+    
+    is $carrier->name, 'IsMobile', $address;
+    is $carrier->carrier_letter, '', $address;
+    
+    ok $carrier->mime_encoding->can('encode');
+    ok $carrier->mail_encoding->can('encode');
+    is $carrier->mime_encoding->name, 'MIME-Header-ISO_2022_JP';
+    is $carrier->mail_encoding->name, 'iso-2022-jp';
 }
 
 for my $address (@docomo) {
-    my ($email) = Email::Address::Loose->parse($address);
-    ok $email->is_mobile($address), $address;
-    is $email->carrier_name, 'DoCoMo', $address;
-    is $email->carrier_letter, 'D', $address;
-    is $email->encoding_name, 'x-sjis-docomo';
+    my $carrier = Email::Address::JP::Mobile->new($address);
+    ok $carrier->is_mobile, $address;
+    
+    is $carrier->name, 'DoCoMo', $address;
+    is $carrier->carrier_letter, 'I', $address;
+    
+    ok $carrier->mime_encoding->can('encode');
+    ok $carrier->mail_encoding->can('encode');
+    is $carrier->mime_encoding->name, 'MIME-Header-JP-Mobile-DoCoMo-SJIS';
+    is $carrier->mail_encoding->name, 'x-sjis-docomo';
 }
 
 for my $address (@kddi) {
-    my ($email) = Email::Address::Loose->parse($address);
-    ok $email->is_mobile($address), $address;
-    is $email->carrier_name, 'EZweb', $address;
-    is $email->carrier_letter, 'E', $address;
-    is $email->encoding_name, 'x-sjis-kddi-auto';
+    my $carrier = Email::Address::JP::Mobile->new($address);
+    ok $carrier->is_mobile, $address;
+    
+    is $carrier->name, 'EZweb', $address;
+    is $carrier->carrier_letter, 'E', $address;
+    
+    ok $carrier->mime_encoding->can('encode');
+    ok $carrier->mail_encoding->can('encode');
+    is $carrier->mime_encoding->name, 'MIME-Header-JP-Mobile-KDDI-SJIS';
+    is $carrier->mail_encoding->name, 'x-sjis-kddi-auto';
 }
 
 for my $address (@softbank) {
-    my ($email) = Email::Address::Loose->parse($address);
-    ok $email->is_mobile($address), $address;
-    is $email->carrier_name, 'ThirdForce', $address;
-    is $email->carrier_letter, 'V', $address;
-    is $email->encoding_name, 'x-utf8-softbank';
+    my $carrier = Email::Address::JP::Mobile->new($address);
+    ok $carrier->is_mobile, $address;
+    
+    is $carrier->name, 'SoftBank', $address;
+    is $carrier->carrier_letter, 'V', $address;
+    
+    ok $carrier->mime_encoding->can('encode');
+    ok $carrier->mail_encoding->can('encode');
+    is $carrier->mime_encoding->name, 'MIME-Header-JP-Mobile-SoftBank-UTF8';
+    is $carrier->mail_encoding->name, 'x-utf8-softbank';
 }
 
 for my $address (@willcom) {
-    my ($email) = Email::Address::Loose->parse($address);
-    ok $email->is_mobile($address), $address;
-    is $email->carrier_name, 'AirHPhone', $address;
-    is $email->carrier_letter, 'H', $address;
-    is $email->encoding_name, 'x-sjis-docomo';
+    my $carrier = Email::Address::JP::Mobile->new($address);
+    ok $carrier->is_mobile, $address;
+
+    is $carrier->name, 'AirH', $address;
+    is $carrier->carrier_letter, 'H', $address;
+
+    ok $carrier->mime_encoding->can('encode');
+    ok $carrier->mail_encoding->can('encode');
+    is $carrier->mime_encoding->name, 'MIME-Header-JP-Mobile-AirH-SJIS';
+    is $carrier->mail_encoding->name, 'x-sjis-airh';
 }

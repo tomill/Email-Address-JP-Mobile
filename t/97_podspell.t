@@ -7,3 +7,13 @@ all_pod_files_spelling_ok('lib');
 __DATA__
 Naoki Tomita
 Email::Address::JP::Mobile
+tomi-ru
+freenode
+irc
+docomo
+kddi
+au
+softbank
+airh
+willcom
+nonmobile
