@@ -1,15 +1,22 @@
 package Email::Address::JP::Mobile::EZweb;
 use strict;
 use warnings;
-use base 'Email::Address::JP::Mobile::IsMobile';
+use base 'Email::Address::JP::Mobile::Base';
+
+my $regex = qr/^(?:
+ezweb\.ne\.jp|
+.*\.ezweb\.ne\.jp
+)$/x;
 
 sub matches {
-    Mail::Address::MobileJp::is_ezweb($_[1]) ? 10 : 0;
+    $_[1]->host =~ $regex  ? 10 : 0;
 }
 
 sub name { 'EZweb' }
 
 sub carrier_letter { 'E' }
+
+sub is_mobile { 1 }
 
 sub mime_encoding {
     Encode::find_encoding('MIME-Header-JP-Mobile-EZweb');

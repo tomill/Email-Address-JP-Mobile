@@ -3,9 +3,27 @@ use Test::More 'no_plan';
 
 use Email::Address::JP::Mobile;
 
+my @non_email = (
+    'foo@',
+    '@bar',
+);
+
 my @non_mobile = (
     'foo@example.com',
     'foo@dxx.pdx.ne.jp',
+    'foo@mnx.ne.jp',
+    'foo@bar.mnx.ne.jp',
+    'foo@dct.dion.ne.jp',
+    'foo@sky.tu-ka.ne.jp',
+    'foo@bar.sky.tkc.ne.jp',
+    'foo@em.nttpnet.ne.jp',
+    'foo@bar.em.nttpnet.ne.jp',
+    'foo@phone.ne.jp',
+    'foo@bar.mozio.ne.jp',
+    'foo@p1.foomoon.com',
+    'foo@x.i-get.ne.jp',
+    'foo@ez1.ido.ne.jp',
+    'foo@cmail.ido.ne.jp',
 );
 
 my @docomo = (
@@ -34,29 +52,17 @@ my @willcom = (
     'foo@dx.pdx.ne.jp',
 );
 
-my @is_mobile_but_old = (
-    'foo@mnx.ne.jp',
-    'foo@bar.mnx.ne.jp',
-    'foo@dct.dion.ne.jp',
-    'foo@sky.tu-ka.ne.jp',
-    'foo@bar.sky.tkc.ne.jp',
-    'foo@em.nttpnet.ne.jp',
-    'foo@bar.em.nttpnet.ne.jp',
-    'foo@phone.ne.jp',
-    'foo@bar.mozio.ne.jp',
-    'foo@p1.foomoon.com',
-    'foo@x.i-get.ne.jp',
-    'foo@ez1.ido.ne.jp',
-    'foo@cmail.ido.ne.jp',
-);
-
 my @is_mobile = (
     @docomo,
     @kddi,
     @softbank,
     @willcom,
-    @is_mobile_but_old,
 );
+
+for my $address (@non_email) {
+    my $carrier = Email::Address::JP::Mobile->new($address);
+    is $carrier, undef, $address;
+}
 
 for my $address (@non_mobile) {
     my $carrier = Email::Address::JP::Mobile->new($address);
@@ -66,7 +72,6 @@ for my $address (@non_mobile) {
     
     ok $carrier->mime_encoding->can('encode');
     ok $carrier->mail_encoding->can('encode');
-
     is $carrier->mime_encoding->name, 'MIME-Header';
     is $carrier->mail_encoding->name, 'utf-8-strict';
     
@@ -78,19 +83,6 @@ for my $address (@non_mobile) {
 for my $address (@is_mobile) {
     my $carrier = Email::Address::JP::Mobile->new($address);
     ok $carrier->is_mobile, $address;
-}
-
-for my $address (@is_mobile_but_old) {
-    my $carrier = Email::Address::JP::Mobile->new($address);
-    ok $carrier->is_mobile, $address;
-    
-    is $carrier->name, 'IsMobile', $address;
-    is $carrier->carrier_letter, '', $address;
-    
-    ok $carrier->mime_encoding->can('encode');
-    ok $carrier->mail_encoding->can('encode');
-    is $carrier->mime_encoding->name, 'MIME-Header-ISO_2022_JP';
-    is $carrier->mail_encoding->name, 'iso-2022-jp';
 }
 
 for my $address (@docomo) {

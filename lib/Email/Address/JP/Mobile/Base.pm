@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 use Encode;
+use Encode::JP::Mobile;
 
 sub new {
     bless {}, shift;

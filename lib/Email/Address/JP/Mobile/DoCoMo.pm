@@ -1,15 +1,21 @@
 package Email::Address::JP::Mobile::DoCoMo;
 use strict;
 use warnings;
-use base 'Email::Address::JP::Mobile::IsMobile';
+use base 'Email::Address::JP::Mobile::Base';
+
+my $regex = qr/^(?:
+docomo\.ne\.jp
+)$/x;
 
 sub matches {
-    Mail::Address::MobileJp::is_imode($_[1]) ? 10 : 0;
+    $_[1]->host =~ $regex  ? 10 : 0;
 }
 
 sub name { 'DoCoMo' }
 
 sub carrier_letter { 'I' }
+
+sub is_mobile { 1 }
 
 sub mime_encoding {
     Encode::find_encoding('MIME-Header-JP-Mobile-DoCoMo');

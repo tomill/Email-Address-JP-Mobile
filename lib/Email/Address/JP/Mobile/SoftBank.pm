@@ -1,15 +1,24 @@
 package Email::Address::JP::Mobile::SoftBank;
 use strict;
 use warnings;
-use base 'Email::Address::JP::Mobile::IsMobile';
+use base 'Email::Address::JP::Mobile::Base';
+
+my $regex = qr/^(?:
+jp\-[dhtckrnsq]\.ne\.jp|
+[dhtckrnsq]\.vodafone\.ne\.jp|
+softbank\.ne\.jp|
+disney.ne.jp
+)$/x;
 
 sub matches {
-    Mail::Address::MobileJp::is_vodafone($_[1]) ? 10 : 0;
+    $_[1]->host =~ $regex  ? 10 : 0;
 }
 
 sub name { 'SoftBank' }
 
 sub carrier_letter { 'V' }
+
+sub is_mobile { 1 }
 
 sub mime_encoding {
     Encode::find_encoding('MIME-Header-JP-Mobile-SoftBank');
@@ -60,6 +69,8 @@ Email::Address::JP::Mobile::SoftBank - Email class for Japanese carrier SoftBank
 
 L<Mail::Address::MobileJp>, L<Encode::JP::Mobile>, L<HTTP::MobileAgent::Vodafone>,
 L<http://mb.softbank.jp/>
+
+L<http://mb.softbank.jp/mb/service/3G/mail/s_mail/>, L<http://disneymobile.jp/mail/>
 
 =head1 AUTHOR
 

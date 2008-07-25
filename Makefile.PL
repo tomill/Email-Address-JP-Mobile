@@ -5,7 +5,7 @@ all_from 'lib/Email/Address/JP/Mobile.pm';
 
 requires 'Encode';
 requires 'Encode::JP::Mobile', 0.26;
-requires 'Mail::Address::MobileJp';
+requires 'Email::Address::Loose';
 requires 'Module::Pluggable';
 
 build_requires 'Test::More';

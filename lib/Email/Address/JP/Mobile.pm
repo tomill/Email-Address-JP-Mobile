@@ -3,6 +3,7 @@ use strict;
 use warnings;
 our $VERSION = '0.01';
 
+use Email::Address::Loose;
 use Module::Pluggable(
     search_path => __PACKAGE__,
     except      => __PACKAGE__.'::Base',
@@ -11,14 +12,20 @@ use Module::Pluggable(
 
 sub new {
     my $self = bless {}, shift;
-    my $address = shift || "";
+    my $address = shift;
     
+    if (! ref($address) || ! $address->isa('Email::Address')) {
+        ($address) = Email::Address::Loose->parse($address);
+    }
+    
+    return unless $address;
+     
     my @module =
         sort { $b->matches($address) <=> $a->matches($address) }
         grep { $_->matches($address) > 0 }
         grep { $_->isa('Email::Address::JP::Mobile::Base') }
         $self->plugins;
-     
+    
     shift @module;
 }
 

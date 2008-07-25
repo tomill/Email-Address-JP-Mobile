@@ -1,15 +1,23 @@
 package Email::Address::JP::Mobile::AirH;
 use strict;
 use warnings;
-use base 'Email::Address::JP::Mobile::IsMobile';
+use base 'Email::Address::JP::Mobile::Base';
+
+my $regex = qr/^(?:
+pdx\.ne\.jp|
+d.\.pdx\.ne\.jp|
+wm\.pdx\.ne\.jp
+)$/x;
 
 sub matches {
-    Mail::Address::MobileJp::is_mobile_jp($_[1]) && $_[1] =~ /pdx\.ne\.jp$/ ? 10 : 0;
+    $_[1]->host =~ $regex  ? 10 : 0;
 }
 
 sub name { 'AirH' }
 
 sub carrier_letter { 'H' }
+
+sub is_mobile { 1 }
 
 sub mime_encoding {
     Encode::find_encoding('MIME-Header-JP-Mobile-AirH');
@@ -60,6 +68,8 @@ Email::Address::JP::Mobile::AirH - Email class for Japanese carrier Willcom
 
 L<Mail::Address::MobileJp>, L<Encode::JP::Mobile>, L<HTTP::MobileAgent::AirHPhone>,
 L<http://www.willcom-inc.com/>
+
+L<http://www.willcom-inc.com/ja/service/e_mail/spec/index.html>
 
 =head1 AUTHOR
 
