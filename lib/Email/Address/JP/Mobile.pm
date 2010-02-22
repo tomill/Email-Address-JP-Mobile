@@ -1,32 +1,36 @@
 package Email::Address::JP::Mobile;
 use strict;
 use warnings;
+use 5.008000;
 our $VERSION = '0.01';
-
 use Email::Address::Loose;
-use Module::Pluggable(
-    search_path => __PACKAGE__,
-    except      => __PACKAGE__.'::Base',
-    instantiate => 'new'
-);
+
+sub _carriers { qw(
+    DoCoMo
+    EZweb
+    AirH
+    SoftBank
+    NonMobile
+) }
+
+BEGIN {
+    for (_carriers) {
+        eval "use Email::Address::JP::Mobile::$_;";
+        die $@ if $@;
+    }
+};
 
 sub new {
-    my $self = bless {}, shift;
-    my $address = shift;
-    
-    if (! ref($address) || ! $address->isa('Email::Address')) {
-        ($address) = Email::Address::Loose->parse($address);
-    }
-    
-    return unless $address;
+    my ($class, $address) = @_;
+    my ($email) = Email::Address::Loose->parse($address);
+    return unless $email;
      
-    my @module =
-        sort { $b->matches($address) <=> $a->matches($address) }
-        grep { $_->matches($address) > 0 }
-        grep { $_->isa('Email::Address::JP::Mobile::Base') }
-        $self->plugins;
-    
-    shift @module;
+    my ($carrier) =
+        grep { $_->matches($email) }
+            map { "Email::Address::JP::Mobile::$_" }
+                _carriers;
+
+    $carrier->new;
 }
 
 sub Email::Address::carrier {

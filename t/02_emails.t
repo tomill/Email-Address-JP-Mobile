@@ -75,14 +75,6 @@ for my $address (@non_mobile) {
         is $carrier->name, 'NonMobile', $address;
         is $carrier->carrier_letter, 'N', $address;
         
-        ok $carrier->mime_encoding->can('encode');
-        ok $carrier->mail_encoding->can('encode');
-        is $carrier->mime_encoding->name, 'MIME-Header';
-        is $carrier->mail_encoding->name, 'utf-8-strict';
-        
-        local $Email::Address::JP::Mobile::NonMobile::Encoding = 'iso-2022-jp';
-        is $carrier->mime_encoding->name, 'MIME-Header-ISO_2022_JP';
-        is $carrier->mail_encoding->name, 'iso-2022-jp';
         done_testing();
     };
 }
@@ -103,10 +95,6 @@ for my $address (@docomo) {
         is $carrier->name, 'DoCoMo', $address;
         is $carrier->carrier_letter, 'I', $address;
         
-        ok $carrier->mime_encoding->can('encode');
-        ok $carrier->mail_encoding->can('encode');
-        is $carrier->mime_encoding->name, 'MIME-Header-JP-Mobile-DoCoMo-SJIS';
-        is $carrier->mail_encoding->name, 'x-sjis-docomo';
         done_testing();
     };
 }
@@ -118,11 +106,6 @@ for my $address (@kddi) {
         
         is $carrier->name, 'EZweb', $address;
         is $carrier->carrier_letter, 'E', $address;
-        
-        ok $carrier->mime_encoding->can('encode');
-        ok $carrier->mail_encoding->can('encode');
-        is $carrier->mime_encoding->name, 'MIME-Header-JP-Mobile-KDDI-SJIS';
-        is $carrier->mail_encoding->name, 'x-sjis-kddi-auto';
 
         done_testing();
     };
@@ -135,11 +118,6 @@ for my $address (@softbank) {
         
         is $carrier->name, 'SoftBank', $address;
         is $carrier->carrier_letter, 'V', $address;
-        
-        ok $carrier->mime_encoding->can('encode');
-        ok $carrier->mail_encoding->can('encode');
-        is $carrier->mime_encoding->name, 'MIME-Header-JP-Mobile-SoftBank-UTF8';
-        is $carrier->mail_encoding->name, 'x-utf8-softbank';
 
         done_testing();
     };
@@ -152,11 +130,6 @@ for my $address (@willcom) {
 
         is $carrier->name, 'AirH', $address;
         is $carrier->carrier_letter, 'H', $address;
-
-        ok $carrier->mime_encoding->can('encode');
-        ok $carrier->mail_encoding->can('encode');
-        is $carrier->mime_encoding->name, 'MIME-Header-JP-Mobile-AirH-SJIS';
-        is $carrier->mail_encoding->name, 'x-sjis-airh';
 
         done_testing();
     }
