@@ -2,9 +2,6 @@ package Email::Address::JP::Mobile::Base;
 use strict;
 use warnings;
 
-use Encode;
-use Encode::JP::Mobile;
-
 sub new {
     bless {}, shift;
 }
@@ -13,19 +10,8 @@ sub matches { 0 }
 
 sub name { '' }
 
-sub DESTROY { }
+sub carrier_letter { '' }
 
-sub AUTOLOAD {
-    my ($self, @args) = @_;
-    my $method = our $AUTOLOAD;
-       $method =~ s/.+:://;
-    
-    {
-        no strict 'refs'; ## no critic
-        *$AUTOLOAD = sub { undef };
-    }
-    
-    goto &$AUTOLOAD;
-}
+sub is_mobile { 0 }
 
 1;

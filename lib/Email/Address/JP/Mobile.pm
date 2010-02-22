@@ -44,66 +44,95 @@ __END__
 
 =head1 NAME
 
-Email::Address::JP::Mobile - Email feature differences by the carrier
+Email::Address::JP::Mobile - Japanese carrier email class
 
 =head1 SYNOPSIS
-
+  
   use Email::Address::JP::Mobile;
 
   my $carrier = Email::Address::JP::Mobile->new('docomo.taro.@docomo.ne.jp');
-  $carrier->is_mobile; # 1
-  $carrier->name; # "DoCoMo"
-  $carrier->carrier_letter; # "I"
-  $carrier->mime_encoding->encode("\x{E63E}です"); # "=?SHIFT_JIS?B?+J+CxYK3?="
-  $carrier->mail_encoding->encode("\x{E63E}です"); # "\xF8\x9F\x82\xC5\x82\xB7"
-  
-  # or,
-  
-  use Email::Address;
-  use Email::Address::Loose -override;
-  use Email::Address::JP::Mobile;
+  $carrier->is_mobile; # => true
+  $carrier->name; # => "DoCoMo"
+  $carrier->carrier_letter; # => "I"
 
-  my ($email) = Email::Address->parse('docomo.taro.@docomo.ne.jp');
-  my $carrier = $email->carrier;
+or
+
+  use Email::Address::Loose;
+  use Email::Address::JP::Mobile;
+  
+  my ($email) = Email::Address::Loose->parse('docomo.taro.@docomo.ne.jp');
+  $email->carrier->is_mobile; # => true
 
 =head1 DESCRIPTION
 
-Email::Address::JP::Mobile is 日本の携帯電話のキャリアによる違いに
-対応するためのモジュールです。キャリアの判別やメール送信する際の適した
-エンコーディングを返します。
+Email::Address::JP::Mobile is a module for Japanese web developers.
+
+このモジュールは要するに L<HTTP::MobileAgent> のメール版です。
+
+同様のことができるモジュールに L<Mail::Address::MobileJp> があります。
+Email::Address::JP::Mobile は L<Email::Address> オブジェクトを拡張する点や
+C<is_mobile($email)> ではなく C<< $email->carrier->is_mobile >> という
+インターフェースである点が違います。
 
 =head1 METHODS
 
 =over 4
 
-=item new( $email )
+=item $carrier = Email::Address::JP::Mobile->new( $email )
+
+メールアドレスから、対応したクラスを返します。
 
   my $carrier = Email::Address::JP::Mobile->new('docomo.taro.@docomo.ne.jp');
-  $carrier->carrier_letter; # "I"
-  $carrier->mime_encoding;  # 'MIME-Header-JP-Mobile-DoCoMo' Encode::Encoding object
-  $carrier->mail_encoding;  # 'x-sjis-docomo' Encode::Encoding object
+  # $carrier is a Email::Address::JP::Mobile::DoCoMo
+  $carrier->is_mobile; # => true
+  $carrier->name; # => "DoCoMo"
+  $carrier->carrier_letter; # => "I"
 
-$carrier のメソッドについては各クラスの POD を参照してください。
-(L<http://search.cpan.org/dist/Email-Address-JP-Mobile>)
- 
-=item Email::Address::carrier
+携帯メアドではない場合は Email::Address::JP::Mobile::NonMobile クラスを返します。
 
-  my ($email) = Email::Address->parse('docomo.taro.@docomo.ne.jp');
+=item $carrier = $email->carrier()
+
+  my ($email) = Email::Address->parse('docomo.taro@docomo.ne.jp');
   $email->carrier->carrier_letter; # "I"
 
-Email::Address::JP::Mobile は Email::Address オブジェクトに
-carrier というメソッドを拡張します。
+Email::Address::JP::Mobile は L<Email::Address> オブジェクトに C<carrier()>
+というメソッドを拡張します。
 
-ご存知のように日本の携帯は変なアドレスが許可されているので
-L<Email::Address::Loose> を併用した方がいいです。
+ご存知のように日本の携帯は変なアドレスが許可されている期間が長かったので、
+携帯アドレスをパースする可能性があるのであれば L<Email::Address::Loose> を
+利用もしくは併用した方がよいです。
 
 =back
 
+=head1 EMAIL CLASS METHODS
+
+=over 4
+
+=item $carrier->is_mobile
+
+=item $carrier->name
+
+=item $carrier->carrier_letter
+
+各メソッドが返す値は以下のとおりです。
+
+             is_mobile  name         carrier_letter
+  -------------------------------------------------
+  DoCoMo     true       "DoCoMo"     "I"
+  au         true       "EZweb"      "E"
+  SoftBank   true       "SoftBank"   "V"
+  WILLCOM    true       "AirH"       "H"
+  NonMobile  false      "NonMobile"  "N"
+
+=back
+
+=head1 ROADMAP
+
+メールの解析、送信時用のエンコーディングを返すメソッドを追加予定。
+
 =head1 SEE ALSO
 
-L<Encode::JP::Moible>, L<Email::Address>, L<Email::Address::Loose>
-
-L<http://coderepos.org/share/browser/lang/perl/Email-Address-JP-Mobile> (repository)
+L<Email::Address::Loose>, L<Mail::Address::MobileJp>
 
 #mobilejp on irc.freenode.net (I've joined as "tomi-ru")
 
