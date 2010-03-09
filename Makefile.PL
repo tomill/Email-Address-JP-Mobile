@@ -6,7 +6,7 @@ auto_set_repository;
 
 requires 'Email::Address::Loose';
 
-test_requires 'Test::More';
+test_requires 'Test::More' => 0.90;
 test_requires 'Email::Address';
 author_tests 'xt';
 
