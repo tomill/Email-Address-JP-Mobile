@@ -18,4 +18,16 @@ sub carrier_letter { 'E' }
 
 sub is_mobile { 1 }
 
+sub mime_encoding {
+    Encode::find_encoding('MIME-Header-JP-Mobile-KDDI');
+}
+
+sub send_encoding {
+    Encode::find_encoding('x-sjis-kddi-auto');
+}
+
+sub parse_encoding {
+    Encode::find_encoding('x-iso-2022-jp-kddi-auto');
+}
+
 1;

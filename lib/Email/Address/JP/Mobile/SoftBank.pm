@@ -20,4 +20,16 @@ sub carrier_letter { 'V' }
 
 sub is_mobile { 1 }
 
+sub mime_encoding {
+    Encode::find_encoding('MIME-Header-JP-Mobile-SoftBank');
+}
+
+sub send_encoding {
+    Encode::find_encoding('x-utf8-softbank');
+}
+
+sub parse_encoding {
+    Encode::find_encoding('iso-2022-jp');
+}
+
 1;

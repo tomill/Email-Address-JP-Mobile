@@ -5,6 +5,8 @@ all_from 'lib/Email/Address/JP/Mobile.pm';
 auto_set_repository;
 
 requires 'Email::Address::Loose';
+requires 'Encode';
+requires 'Encode::JP::Mobile' => 0.27;
 
 test_requires 'Test::More' => 0.90;
 test_requires 'Email::Address';

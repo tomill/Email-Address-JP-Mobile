@@ -17,4 +17,16 @@ sub carrier_letter { 'I' }
 
 sub is_mobile { 1 }
 
+sub mime_encoding {
+    Encode::find_encoding('MIME-Header-JP-Mobile-DoCoMo');
+}
+
+sub send_encoding {
+    Encode::find_encoding('x-sjis-docomo');
+}
+
+sub parse_encoding {
+    Encode::find_encoding('iso-2022-jp');
+}
+
 1;

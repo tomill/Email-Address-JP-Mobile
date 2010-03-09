@@ -19,4 +19,16 @@ sub carrier_letter { 'H' }
 
 sub is_mobile { 1 }
 
+sub mime_encoding {
+    Encode::find_encoding('MIME-Header-JP-Mobile-AirH');
+}
+
+sub send_encoding {
+    Encode::find_encoding('x-sjis-airh');
+}
+
+sub parse_encoding {
+    Encode::find_encoding('x-iso-2022-jp-airh');
+}
+
 1;
