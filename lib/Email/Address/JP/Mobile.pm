@@ -2,7 +2,7 @@ package Email::Address::JP::Mobile;
 use strict;
 use warnings;
 use 5.008000;
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 use Email::Address::Loose;
 
 sub _carriers { qw(

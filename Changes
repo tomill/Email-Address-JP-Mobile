@@ -1,5 +1,9 @@
 Revision history for Perl extension Email::Address::JP::Mobile
 
+0.03  Mon May 17 18:33:39 JST 2010
+        - requires Test::More 0.94 for subtest()
+          http://www.cpantesters.org/cpan/report/7141684
+
 0.02  Tue Feb 23 08:41:56 JST 2010
         - first CPAN release
 

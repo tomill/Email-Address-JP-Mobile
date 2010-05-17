@@ -8,7 +8,7 @@ requires 'Email::Address::Loose';
 requires 'Encode';
 requires 'Encode::JP::Mobile' => 0.27;
 
-test_requires 'Test::More' => 0.90;
+test_requires 'Test::More' => 0.94; # subtest
 test_requires 'Email::Address';
 author_tests 'xt';
 
