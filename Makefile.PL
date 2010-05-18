@@ -6,7 +6,7 @@ auto_set_repository;
 
 requires 'Email::Address::Loose';
 requires 'Encode';
-requires 'Encode::JP::Mobile' => 0.27;
+requires 'Encode::JP::Mobile' => 0.27; # mime encodings
 
 test_requires 'Test::More' => 0.94; # subtest
 test_requires 'Email::Address';

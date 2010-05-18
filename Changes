@@ -1,6 +1,7 @@
 Revision history for Perl extension Email::Address::JP::Mobile
 
-0.03  Mon May 17 18:33:39 JST 2010
+0.04  Tue May 18 11:19:27 JST 2010
+        - add mime_encoding(), send_encoding(), perse_encoding()
         - requires Test::More 0.94 for subtest()
           http://www.cpantesters.org/cpan/report/7141684
 
