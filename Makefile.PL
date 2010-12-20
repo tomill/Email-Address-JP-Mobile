@@ -9,6 +9,8 @@ test_requires 'Test::More' => 0.94; # subtest
 test_requires 'Email::Address';
 author_tests 'xt';
 
+readme_from 'lib/Email/Address/JP/Mobile.pm';
+
 resources(
     repository => 'http://github.com/tomi-ru/Email-Address-JP-Mobile',
     bugtracker => 'http://github.com/tomi-ru/Email-Address-JP-Mobile/issues',
