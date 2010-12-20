@@ -28,15 +28,15 @@ sub carrier_letter { 'N' }
 sub is_mobile { 0 }
 
 sub mime_encoding {
-    Encode::find_encoding($EncodingMap->{ $Encoding }{mime});
+    Encode::find_encoding($EncodingMap->{ lc $Encoding }{mime});
 }
 
 sub send_encoding {
-    Encode::find_encoding($EncodingMap->{ $Encoding }{send});
+    Encode::find_encoding($EncodingMap->{ lc $Encoding }{send});
 }
 
 sub parse_encoding {
-    Encode::find_encoding($EncodingMap->{ $Encoding }{parse});
+    Encode::find_encoding($EncodingMap->{ lc $Encoding }{parse});
 }
 
 1;
