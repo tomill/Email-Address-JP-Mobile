@@ -8,3 +8,11 @@ __DATA__
 Naoki Tomita
 tomi-ru
 Email::Address::JP::Mobile
+DoCoMo
+NonMobile
+SoftBank
+freenode
+irc
+iso
+jp
+utf

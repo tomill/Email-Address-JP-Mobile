@@ -15,7 +15,7 @@ sub _carriers { qw(
 
 BEGIN {
     for (_carriers) {
-        eval "use Email::Address::JP::Mobile::$_;";
+        eval "use Email::Address::JP::Mobile::$_;"; ## no critic
         die $@ if $@;
     }
 };
