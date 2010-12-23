@@ -143,7 +143,9 @@ C<carrier()> というメソッドを拡張します。
 
 そのキャリア向けにメールを送信する際、絵文字を含んだ Subject を MIME encode するためのエンコーディングを返します。何を返すかはL</ENCODINGS>を参照してください。
 
-そのキャリアの端末から受信したメールの Subject を MIME decode するためにも利用できます。ただし DoCoMo や SoftBank からの場合絵文字は最初からゲタになり取れないため通常の C<MIME-Header-ISO_2022_JP> 扱いとなります。
+C<< $carrier->is_mobile >>の場合は、そのキャリアの端末から受信したメールの Subject を MIME decode するためにも利用できます。ただし DoCoMo や SoftBank からの場合絵文字は最初からゲタになり取れないため通常の C<MIME-Header-ISO_2022_JP> 扱いとなります。
+
+NonMobile の場合には MIME-Header-ISO_2022_JP エンコーディングが返りますが、これは現状 decode に対応していません。代わりに MIME-Header というエンコーディングで decode する必要があるので注意してください。
 
 =item $carrier->send_encoding()
 
@@ -184,7 +186,7 @@ MIME-Header-JP-Mobile-* や x-* のエンコーディングは L<Encode::JP::Mob
   $carrier->send_encoding;  # utf-8 encoding
   $carrier->parse_encoding; # utf-8 encoding
 
-NonMobileの場合のデフォルトエンコーディングはiso-2022-jpですが、この変数でutf-8を指定するとutf-8エンコーディングを返します。
+NonMobile の場合のデフォルトエンコーディングは iso-2022-jp ですが、この変数で utf-8 を指定すると上記のようなエンコーディングを返します。
 
 =back
 
