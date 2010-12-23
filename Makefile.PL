@@ -5,7 +5,7 @@ requires 'Email::Address::Loose';
 requires 'Encode';
 requires 'Encode::JP::Mobile' => 0.27; # mime encodings
 
-test_requires 'Test::More' => 0.94; # subtest
+test_requires 'Test::More' => 0.96; # subtest / auto done_testing()
 test_requires 'Email::Address';
 author_tests 'xt';
 
