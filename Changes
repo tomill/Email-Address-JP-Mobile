@@ -1,5 +1,10 @@
 Revision history for Perl extension Email::Address::JP::Mobile
 
+0.06  Thu Dec 23 16:20:25 JST 2010
+        - no code changes
+        - update test_requires Test::More to 0.96
+        - pod update
+
 0.05  Mon Dec 20 14:56:23 JST 2010
         - move repository to gitHub
         - add $Email::Address::JP::Mobile::NonMobile::Encoding option
