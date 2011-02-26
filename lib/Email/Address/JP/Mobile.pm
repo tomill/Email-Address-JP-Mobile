@@ -60,24 +60,24 @@ Email::Address::JP::Mobile - Japanese carrier email class
 
 or, via Email::Address object
 
-  use Email::Address::Loose;
+  use Email::Address;
+  use Email::Address::Loose -override;
   use Email::Address::JP::Mobile;
   
-  my ($email) = Email::Address::Loose->parse('docomo.taro.@docomo.ne.jp');
-  # $email is a Email::Address object
-  $email->carrier->is_mobile; # => true
+  my ($email) = Email::Address->parse('docomo.taro.@docomo.ne.jp');
+  my $carrier = $email->carrier;
+  $carrier->is_mobile; # => true
 
 =head1 DESCRIPTION
 
-Email::Address::JP::Mobile is a module for Japanese web developers.
+Email::Address::JP::Mobile is for Japanese web developers.
 
 このモジュールは要するに L<HTTP::MobileAgent> のメール版です。
 メールアドレスから、それがどのキャリアで発行されたメールアドレスかを判別します。
 
 同様のことができるモジュールに L<Mail::Address::MobileJp> があります。
 Email::Address::JP::Mobile は L<Email::Address> オブジェクトを拡張する点や、
-C<is_mobile($email)> ではなく C<< $email->carrier->is_mobile >>
-というインターフェースである点が違います。
+C<is_mobile($email)> ではなく C<< $carrier->is_mobile() >> というインターフェースである点が違います。
 
 =head1 USAGE
 
@@ -101,19 +101,14 @@ Email::Address::JP::Mobile は L<Email::Address> オブジェクトに、対応�
 C<carrier()> というメソッドを拡張します。
 
   use Email::Address;
+  use Email::Address::Loose -override;
   use Email::Address::JP::Mobile;
   my ($email) = Email::Address->parse('docomo.taro@docomo.ne.jp');
   $email->carrier->carrier_letter; # "I"
 
 ご存知のように日本の携帯は変なアドレスが許可されている期間が長かったので、
 携帯アドレスをパースする可能性があるのであれば L<Email::Address::Loose> を
-利用もしくは併用した方がよいです。
-
-  use Email::Address;
-  use Email::Address::JP::Mobile;
-  use Email::Address::Loose -override;
-  my (@email) = Email::Address->parse('docomo.taro.@docomo.ne.jp');
-  $email->carrier->carrier_letter; # "I"
+併用した方がよいです。
 
 =back
 
@@ -137,6 +132,8 @@ C<carrier()> というメソッドを拡張します。
   WILLCOM    true       "AirH"       "H"
   NonMobile  false      "NonMobile"  "N"
 
+C<carrier_letter()> が返す値は L<HTTP::MobileAgent> の C<carrier()> が返す値と同じです。ただし、このモジュールが返す C<name()> の値は L<HTTP::MobileAgent> の C<carrier_longname()> が返す値とは少し異なりますので注意してください。
+
 =item $carrier->mime_encoding()
 
   $subject = $carrier->mime_encoding->encode($subject);
@@ -144,21 +141,23 @@ C<carrier()> というメソッドを拡張します。
 
 そのキャリア向けにメールを送信する際、絵文字を含んだ Subject を MIME encode するためのエンコーディングを返します。何を返すかは L</ENCODINGS> を参照してください。
 
-C<< $carrier->is_mobile >>の場合は、そのキャリアの端末から受信したメールの Subject を MIME decode するためにも利用できます。ただし DoCoMo や SoftBank からの場合絵文字は最初からゲタになり取れないため通常の C<MIME-Header-ISO_2022_JP> 扱いとなります。
+携帯の場合は、そのキャリアの端末から受信したメールの Subject を MIME decode するためにも利用できます。ただし DoCoMo や SoftBank からの場合絵文字は最初からゲタになっているため取れないでしょう。
 
-NonMobile の場合には MIME-Header-ISO_2022_JP エンコーディングが返りますが、これは現状 decode に対応していません。代わりに MIME-Header というエンコーディングで decode する必要があるので注意してください。
+NonMobile の場合には C<MIME-Header-ISO_2022_JP> エンコーディングを返しますが、これは現状 decode に対応していません。代わりに C<MIME-Header> というエンコーディングで decode する必要があるので注意してください。
 
 =item $carrier->send_encoding()
 
   $body = $carrier->send_encoding->encode($body);
 
-そのキャリア向けにメールを送信する際、絵文字を含んだメール本文を encode するためのエンコーディングを返します。何を返すかはL</ENCODINGS>を参照してください。
+そのキャリア向けにメールを送信する際、絵文字を含んだメール本文を encode するためのエンコーディングを返します。何を返すかは L</ENCODINGS> を参照してください。
 
 =item $carrier->parse_encoding()
 
   $body = $carrier->parse_encoding->decode($body);
 
-そのキャリアから受信したメールの絵文字を含んだメール本文を decode するためのオススメなエンコーディングを返します。これはメール本文の C<Content-Type> をチェックしているわけではなく、そのキャリアの場合このエンコーディングで送ってくるだろうというものを返しているだけである点に留意してください。また、DoCoMo や SoftBank からの場合絵文字は最初からゲタになり取れないため普通の C<iso-2022-jp> を返します。
+そのキャリアから受信したメールの絵文字を含んだメール本文を decode するためのエンコーディングを返します。が、これはメール本文の C<Content-Type> をチェックしているわけではなく、そのキャリアの場合このエンコーディングで送ってくるだろうというものを返しているだけである点に留意してください。また、DoCoMo や SoftBank からの場合絵文字は最初からゲタになり取れないため、C<iso-2022-jp> を返します。
+
+そのため、受信の場合は絵文字のことは忘れて L<Email::MIME> の C<header()> や C<body_str()> を使って decode すると良いでしょう。
 
 =back
 
@@ -174,7 +173,7 @@ NonMobile の場合には MIME-Header-ISO_2022_JP エンコーディングが返
   WILLCOM    MIME-Header-JP-Mobile-AirH      x-sjis-airh       x-iso-2022-jp-airh
   NonMobile  MIME-Header-ISO_2022_JP         iso-2022-jp       iso-2022-jp
 
-MIME-Header-JP-Mobile-* や x-* のエンコーディングは L<Encode::JP::Mobile> （0.27以降）が提供するエンコーディングです。
+MIME-Header-JP-Mobile-* や x-* のエンコーディングは L<Encode::JP::Mobile> が提供するエンコーディングです。
 
 =over 4
 
@@ -187,17 +186,17 @@ MIME-Header-JP-Mobile-* や x-* のエンコーディングは L<Encode::JP::Mob
   $carrier->send_encoding;  # utf-8 encoding
   $carrier->parse_encoding; # utf-8 encoding
 
-NonMobile の場合のデフォルトエンコーディングは iso-2022-jp ですが、この変数で utf-8 を指定すると上記のようなエンコーディングを返します。
+NonMobile の場合のデフォルトエンコーディングは C<iso-2022-jp> ですが、この変数で C<utf-8> を指定すると上記のようなエンコーディングを返します。
 
 =back
 
 =head1 SEE ALSO
 
-L<Email::MIME::MobileJP> - 携帯メール送受信のバッドノウハウをラップしたモジュール
-
 L<http://coderepos.org/share/wiki/Mobile/Encoding>
 
-L<Email::Address::Loose>, L<Mail::Address::MobileJp>, L<Encode::JP::Mobile>
+L<Email::Address::Loose>, L<Encode::JP::Mobile>
+
+L<Email::MIME::MobileJP> - 具体的な利用例
 
 #mobilejp on irc.freenode.net (I've joined as "tomi-ru")
 
