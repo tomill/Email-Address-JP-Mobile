@@ -1,6 +1,7 @@
 Revision history for Perl extension Email::Address::JP::Mobile
 
-        - I had ignored the Willcom for a long time. sorry.
+0.08  Mon Mar 14 18:48:14 JST 2011
+        - I had ignored the willcom.com for a long time. sorry.
 
 0.07  Sun Feb 27 07:08:02 JST 2011
         - no code chnges
