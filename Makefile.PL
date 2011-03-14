@@ -5,8 +5,9 @@ requires 'Email::Address::Loose';
 requires 'Encode';
 requires 'Encode::JP::Mobile' => 0.27; # mime encodings
 
-test_requires 'Test::More' => 0.96; # subtest / done_testing
 test_requires 'Email::Address';
+test_requires 'Test::More' => 0.96; # subtest / done_testing
+include 'Test::Builder'; # for Test::Builder 2.x tester
 auto_include_deps;
 
 tests_recursive;

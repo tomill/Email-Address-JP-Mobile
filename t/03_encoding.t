@@ -4,8 +4,6 @@ use Test::More tests => 5;
 use Email::Address::JP::Mobile;
 
 subtest "non mobile" => sub {
-    plan tests => 6;
-    
     my $carrier = Email::Address::JP::Mobile::NonMobile->new;
     
     ok $carrier->mime_encoding, 'mime_encoding';
@@ -19,8 +17,6 @@ subtest "non mobile" => sub {
 };
 
 subtest "docomo" => sub {
-    plan tests => 6;
-    
     my $carrier = Email::Address::JP::Mobile::DoCoMo->new;
     
     ok $carrier->mime_encoding, 'mime_encoding';
@@ -34,8 +30,6 @@ subtest "docomo" => sub {
 };
 
 subtest "kddi" => sub {
-    plan tests => 6;
-    
     my $carrier = Email::Address::JP::Mobile::EZweb->new;
     
     ok $carrier->mime_encoding, 'mime_encoding';
@@ -50,8 +44,6 @@ subtest "kddi" => sub {
 
 
 subtest "softbank" => sub {
-    plan tests => 6;
-    
     my $carrier = Email::Address::JP::Mobile::SoftBank->new;
     
     ok $carrier->mime_encoding, 'mime_encoding';
@@ -65,8 +57,6 @@ subtest "softbank" => sub {
 };
 
 subtest "willcom" => sub {
-    plan tests => 6;
-    
     my $carrier = Email::Address::JP::Mobile::AirH->new;
     
     ok $carrier->mime_encoding, 'mime_encoding';

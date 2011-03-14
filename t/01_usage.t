@@ -2,8 +2,6 @@ use strict;
 use Test::More;
 
 subtest 'via Email::Address object' => sub {
-    plan tests => 5;
-    
     use Email::Address::Loose;
     use Email::Address::JP::Mobile;
     
@@ -18,8 +16,6 @@ subtest 'via Email::Address object' => sub {
 };
 
 subtest 'instantiation directly' => sub {
-    plan tests => 4;
-
     use Email::Address::JP::Mobile;
     
     my $carrier = Email::Address::JP::Mobile->new('Taro <docomo.taro.@docomo.ne.jp>');
