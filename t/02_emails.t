@@ -51,6 +51,8 @@ my @willcom = (
     'foo@dj.pdx.ne.jp',
     'foo@dk.pdx.ne.jp',
     'foo@dx.pdx.ne.jp',
+    'foo@wm.pdx.ne.jp',
+    'foo@willcom.com',
 );
 
 my @is_mobile = (

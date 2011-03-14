@@ -6,7 +6,8 @@ use base 'Email::Address::JP::Mobile::Base';
 my $regex = qr/^(?:
 pdx\.ne\.jp|
 d.\.pdx\.ne\.jp|
-wm\.pdx\.ne\.jp
+wm\.pdx\.ne\.jp|
+willcom\.com
 )$/x;
 
 sub matches {
